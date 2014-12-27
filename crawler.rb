@@ -17,3 +17,12 @@ def parse(page_source)
     ]
   end
 end
+
+def format_text contents
+  text = ""
+  contents.each do |url, title, date|
+    text << "#{date}: #{title}\n"
+    text << "#{url}\n"
+  end
+  text
+end
