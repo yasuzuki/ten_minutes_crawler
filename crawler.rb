@@ -1,7 +1,8 @@
 require 'cgi'
+require 'open-uri'
 
 def page_source
-  `/usr/local/bin/wget -q -O- http://crawler.sbcr.jp/samplepage.html `
+  open('http://crawler.sbcr.jp/samplepage.html', 'r:UTF-8' , &:read)
 end
 
 def parse(page_source)
