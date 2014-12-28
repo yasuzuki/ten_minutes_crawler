@@ -1,8 +1,11 @@
 require 'cgi'
 require 'open-uri'
+require 'rss'
+
+CRAWLING_URL = 'http://crawler.sbcr.jp/samplepage.html'
 
 def page_source
-  open('http://crawler.sbcr.jp/samplepage.html', 'r:UTF-8' , &:read)
+  open(CRAWLING_URL, 'r:UTF-8' , &:read)
 end
 
 def parse(page_source)
@@ -19,6 +22,17 @@ def parse(page_source)
   end
 end
 
+def contents
+  parse page_source
+end
+
+def header
+  [
+    CRAWLING_URL,
+    "www.SBCR.JP トピックス",
+  ]
+end
+
 def format_text contents
   text = ""
   contents.each do |url, title, date|
@@ -26,4 +40,21 @@ def format_text contents
     text << "#{url}\n"
   end
   text
+end
+
+def format_rss url, title, contents
+  RSS::Maker.make('2.0') do |maker|
+    maker.channel.updated = Time.now.to_s
+    maker.channel.link = url
+    maker.channel.title = title
+    maker.channel.description = title
+    contents.each do |url, title, date|
+      maker.items.new_item do |item|
+        item.link = url
+        item.title = title
+        item.updated = date
+        item.description = title
+      end
+    end
+  end
 end
